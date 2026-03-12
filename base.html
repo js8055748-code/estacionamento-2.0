@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>Estacionamento</title>
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+  <div class="container-fluid">
+
+    <!-- TÍTULO + IMAGEM LADO A LADO -->
+    <a class="navbar-brand d-flex align-items-center" href="{{ url_for('index') }}">
+      <!-- ajuste o width para o tamanho que ficar melhor -->
+      <img src="{{ url_for('static', filename='car-stainless-logo-png.jpg') }}"
+           alt="Logo Estacionamento"
+           style="height:40px; width:auto; margin-right:10px;">
+      Estacionamento
+    </a>
+
+    <div class="navbar-nav">
+      <a class="nav-link" href="{{ url_for('listar_clientes') }}">Clientes</a>
+      <a class="nav-link" href="{{ url_for('movimentacao') }}">Movimentação</a>
+      <a class="nav-link" href="{{ url_for('relatorio_diario') }}">Relatório diário</a>
+      <a class="nav-link" href="{{ url_for('dashboard') }}">Evolução</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, msg in messages %}
+        <div class="alert alert-{{ 'danger' if category=='erro' else 'success' }} alert-dismissible fade show" role="alert">
+          {{ msg }}
+          <button type="button" class="btn-warning " data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

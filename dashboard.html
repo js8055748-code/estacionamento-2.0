@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Dashboard - Faturamento diário</h2>
+
+<div class="row">
+  <!-- Esquerda: gráfico -->
+  <div class="col-md-7">
+    <div class="card mb-3">
+      <div class="card-header">Faturamento por dia</div>
+      <div class="card-body text-center">
+        <img src="{{ url_for('grafico_faturamento_diario') }}"
+             alt="Gráfico de faturamento diário"
+             class="img-fluid">
+      </div>
+    </div>
+  </div>
+
+  <!-- Direita: tabela do dia atual -->
+  <div class="col-md-5">
+    <div class="card mb-3">
+      <div class="card-header">
+        Registros do dia {{ dia }}
+      </div>
+      <div class="card-body">
+        <table class="table table-sm">
+          <thead>
+            <tr>
+              <th>Placa</th>
+              <th>Entrada</th>
+              <th>Valor (R$)</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for placa, entrada, valor in registros %}
+            <tr>
+              <td>{{ placa }}</td>
+              <td>{{ entrada }}</td>
+              <td>{{ "%.2f"|format(valor) }}</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        <h6 class="text-end mt-2">
+          Total do dia: R$ {{ "%.2f"|format(total) }}
+        </h6>
+
+        <div class="text-end mt-3">
+          <a class="btn btn-outline-primary"
+             href="{{ url_for('dashboard_relatorio_completo_pdf') }}">
+            Baixar relatório completo em PDF
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

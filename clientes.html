@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Clientes</h2>
+
+<form class="row g-3 mb-4" method="post" action="{{ url_for('novo_cliente') }}">
+  <div class="col-md-3">
+    <label class="form-label">Nome</label>
+    <input type="text" name="nome" class="form-control">
+  </div>
+  <div class="col-md-3">
+    <label class="form-label">CPF</label>
+    <input type="text" name="cpf" class="form-control">
+  </div>
+  <div class="col-md-2">
+    <label class="form-label">Placa</label>
+    <input type="text" name="placa" class="form-control">
+  </div>
+  <div class="col-md-2">
+    <label class="form-label">Tipo</label>
+    <input type="text" name="tipo" class="form-control">
+  </div>
+  <div class="col-md-2 d-flex align-items-end">
+    <button type="submit" class="btn btn-success w-100">Cadastrar</button>
+  </div>
+</form>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>ID</th><th>Nome</th><th>CPF</th><th>Placa</th><th>Tipo</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for cli in clientes %}
+    <tr>
+      <td>{{ cli[0] }}</td>
+      <td>{{ cli[1] }}</td>
+      <td>{{ cli[2] }}</td>
+      <td>{{ cli[3] }}</td>
+      <td>{{ cli[4] }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
