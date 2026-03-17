@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+  <h1>Estacionamentos</h1>
+
+  <!-- Mensagem de orientação fixa para o administrador -->
+  <p class="text-muted">
+    Ao cadastrar um novo estacionamento, é criado um usuário responsável com o e-mail informado.
+    Use o botão <strong>Link do responsável</strong> para copiar o link que deve ser enviado para ele definir a senha.
+  </p>
+
+  <!-- Formulário para novo estacionamento -->
+  <div class="card mb-4">
+    <div class="card-header">
+      Novo Estacionamento
+    </div>
+    <div class="card-body">
+      <form action="{{ url_for('criar_estacionamento_route') }}" method="post">
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Nome do Estacionamento</label>
+            <input type="text" name="nome" class="form-control" required>
+          </div>
+          <div class="col-md-2 mb-3">
+            <label class="form-label">Código</label>
+            <input type="text" name="codigo" class="form-control" required>
+          </div>
+          <div class="col-md-3 mb-3">
+            <label class="form-label">CNPJ</label>
+            <input type="text" name="cnpj" class="form-control">
+          </div>
+          <div class="col-md-3 mb-3">
+            <label class="form-label">Telefone</label>
+            <input type="text" name="telefone" class="form-control">
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            <label class="form-label">E-mail do Estacionamento</label>
+            <input type="email" name="email" class="form-control">
+          </div>
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Nome do Proprietário</label>
+            <input type="text" name="proprietario_nome" class="form-control">
+          </div>
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Contato do Proprietário</label>
+            <input type="text" name="proprietario_contato" class="form-control">
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">E-mail do Responsável (login)</label>
+            <input type="email" name="responsavel_email" class="form-control" required>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Cadastrar Estacionamento</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Tabela de estacionamentos -->
+  <div class="card">
+    <div class="card-header">
+      Lista de Estacionamentos
+    </div>
+    <div class="card-body">
+      <table class="table table-striped table-hover align-middle">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Código</th>
+            <th>Status</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for e in estacionamentos %}
+          <tr>
+            <td>{{ e[0] }}</td>
+            <td>
+              <a href="{{ url_for('detalhes_estacionamento', est_id=e[0]) }}">
+                {{ e[1] }}
+              </a>
+            </td>
+            <td>{{ e[2] }}</td>
+            <td>
+              {% if e[3] == 1 %}
+                <span class="badge bg-success">Ativo</span>
+              {% else %}
+                <span class="badge bg-danger">Bloqueado</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if e[3] == 1 %}
+                <form action="{{ url_for('bloquear_estacionamento_route', est_id=e[0]) }}" method="post" style="display:inline;">
+                  <button type="submit" class="btn btn-danger btn-sm">Bloquear</button>
+                </form>
+              {% else %}
+                <form action="{{ url_for('desbloquear_estacionamento_route', est_id=e[0]) }}" method="post" style="display:inline;">
+                  <button type="submit" class="btn btn-success btn-sm">Desbloquear</button>
+                </form>
+              {% endif %}
+
+              <form action="{{ url_for('excluir_estacionamento_route', est_id=e[0]) }}" method="post" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja excluir este estacionamento?');">
+                <button type="submit" class="btn btn-outline-danger btn-sm ms-1">Excluir</button>
+              </form>
+
+              {% if e[4] %}
+                <!-- Link de convite para o responsável -->
+                <a href="{{ url_for('convite_definir_senha', user_id=e[4]) }}"
+                   class="btn btn-outline-primary btn-sm ms-1">
+                  Link do responsável
+                </a>
+              {% else %}
+                <span class="text-muted ms-1">Sem responsável</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="5" class="text-center text-muted">
+              Nenhum estacionamento cadastrado.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

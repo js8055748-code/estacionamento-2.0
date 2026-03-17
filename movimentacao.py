@@ -1,15 +1,14 @@
+from datetime import datetime
+
 from database import conectar
 from cliente import Clientes
 
-
-
-class Movimentacao:
-    from datetime import datetime
-
+# enquanto não temos login multi-tenant, usamos o estacionamento padrão
+ESTACIONAMENTO_PADRAO_ID = 1
 
 class Movimentacao:
     @staticmethod
-    def registrar_entrada(placa):
+    def registrar_entrada(placa, estacionamento_id=ESTACIONAMENTO_PADRAO_ID):
         placa = placa.strip().upper()
         if not placa:
             raise ValueError("Placa não informada.")
@@ -19,18 +18,17 @@ class Movimentacao:
         conn = conectar()
         cur = conn.cursor()
         cur.execute("""
-            INSERT INTO movimentacoes (placa, entrada)
-            VALUES (?, ?)
-        """, (placa, agora))
-        mov_id = cur.lastrowid         # <<--- IMPORTANTE
+            INSERT INTO movimentacoes (placa, entrada, estacionamento_id)
+            VALUES (?, ?, ?)
+        """, (placa, agora, estacionamento_id))
+        mov_id = cur.lastrowid
         conn.commit()
         conn.close()
 
-        return mov_id                  # <<--- IMPORTANTE
-
+        return mov_id
 
     @staticmethod
-    def registrar_saida(placa):
+    def registrar_saida(placa, estacionamento_id=ESTACIONAMENTO_PADRAO_ID):
         placa = placa.strip().upper()
         if not placa:
             raise ValueError("Placa não informada.")
@@ -38,11 +36,13 @@ class Movimentacao:
         conn = conectar()
         cur = conn.cursor()
 
+        # busca dados do cliente do MESMO estacionamento
         cur.execute("""
             SELECT mensalista, valor_mensalidade
             FROM clientes
             WHERE placa = ?
-        """, (placa,))
+              AND estacionamento_id = ?
+        """, (placa, estacionamento_id))
         cli = cur.fetchone()
 
         mensalista = 0
@@ -50,14 +50,16 @@ class Movimentacao:
         if cli:
             mensalista, valor_mensalidade = cli
 
+        # busca última movimentação em aberto dessa placa no MESMO estacionamento
         cur.execute("""
             SELECT id, entrada
             FROM movimentacoes
             WHERE placa = ?
+              AND estacionamento_id = ?
               AND (saida IS NULL OR saida = '')
             ORDER BY id DESC
             LIMIT 1
-        """, (placa,))
+        """, (placa, estacionamento_id))
         mov = cur.fetchone()
 
         if not mov:
@@ -70,13 +72,14 @@ class Movimentacao:
         if mensalista:
             valor = 0.0
         else:
-            valor = 10.0
+            valor = 10.0  # regra fixa por enquanto
 
         cur.execute("""
             UPDATE movimentacoes
             SET saida = ?, valor = ?
             WHERE id = ?
-        """, (saida_iso, valor, mov_id))
+              AND estacionamento_id = ?
+        """, (saida_iso, valor, mov_id, estacionamento_id))
 
         conn.commit()
         conn.close()
@@ -84,7 +87,7 @@ class Movimentacao:
         return valor
 
     @staticmethod
-    def registrar_pagamento(placa):
+    def registrar_pagamento(placa, estacionamento_id=ESTACIONAMENTO_PADRAO_ID):
         placa = placa.strip().upper()
         if not placa:
             raise ValueError("Placa não informada.")
@@ -92,14 +95,16 @@ class Movimentacao:
         conn = conectar()
         cur = conn.cursor()
 
+        # busca movimentação em aberto da placa no MESMO estacionamento
         cur.execute("""
             SELECT id, entrada
             FROM movimentacoes
             WHERE placa = ?
+              AND estacionamento_id = ?
               AND (saida IS NULL OR saida = '')
             ORDER BY id DESC
             LIMIT 1
-        """, (placa,))
+        """, (placa, estacionamento_id))
         row = cur.fetchone()
 
         if row is None:
@@ -112,13 +117,14 @@ class Movimentacao:
         agora = datetime.now()
         horas = (agora - entrada).total_seconds() / 3600
         horas_cobradas = max(1, int(horas + 0.9999))
-        valor = horas_cobradas * 10.0
+        valor = horas_cobradas * 10.0  # mesma regra de preço
 
         cur.execute("""
             UPDATE movimentacoes
             SET saida = ?, valor = ?
             WHERE id = ?
-        """, (agora.isoformat(sep=" "), valor, mov_id))
+              AND estacionamento_id = ?
+        """, (agora.isoformat(sep=" "), valor, mov_id, estacionamento_id))
 
         conn.commit()
         conn.close()

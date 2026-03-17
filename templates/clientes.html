@@ -1,45 +1,71 @@
-{% extends "base.html" %}
-{% block content %}
-<h2>Clientes</h2>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Clientes</title>
+</head>
+<body>
+    <h1>Clientes do Estacionamento</h1>
 
-<form class="row g-3 mb-4" method="post" action="{{ url_for('novo_cliente') }}">
-  <div class="col-md-3">
-    <label class="form-label">Nome</label>
-    <input type="text" name="nome" class="form-control">
-  </div>
-  <div class="col-md-3">
-    <label class="form-label">CPF</label>
-    <input type="text" name="cpf" class="form-control">
-  </div>
-  <div class="col-md-2">
-    <label class="form-label">Placa</label>
-    <input type="text" name="placa" class="form-control">
-  </div>
-  <div class="col-md-2">
-    <label class="form-label">Tipo</label>
-    <input type="text" name="tipo" class="form-control">
-  </div>
-  <div class="col-md-2 d-flex align-items-end">
-    <button type="submit" class="btn btn-success w-100">Cadastrar</button>
-  </div>
-</form>
+    <a href="{{ url_for('index') }}">Voltar</a>
 
-<table class="table table-striped">
-  <thead>
-    <tr>
-      <th>ID</th><th>Nome</th><th>CPF</th><th>Placa</th><th>Tipo</th>
-    </tr>
-  </thead>
-  <tbody>
-  {% for cli in clientes %}
-    <tr>
-      <td>{{ cli[0] }}</td>
-      <td>{{ cli[1] }}</td>
-      <td>{{ cli[2] }}</td>
-      <td>{{ cli[3] }}</td>
-      <td>{{ cli[4] }}</td>
-    </tr>
-  {% endfor %}
-  </tbody>
-</table>
-{% endblock %}
+    <h2>Novo Cliente</h2>
+    <form action="{{ url_for('novo_cliente') }}" method="post">
+        <label>Nome:</label>
+        <input type="text" name="nome" required><br>
+
+        <label>CPF:</label>
+        <input type="text" name="cpf" required><br>
+
+        <label>Placa:</label>
+        <input type="text" name="placa" required><br>
+
+        <label>Tipo:</label>
+        <select name="tipo">
+            <option value="comum">Comum</option>
+            <option value="mensalista">Mensalista</option>
+        </select><br>
+
+        <button type="submit">Cadastrar</button>
+    </form>
+
+    <h2>Lista de Clientes</h2>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul>
+        {% for categoria, mensagem in messages %}
+          <li><strong>{{ categoria }}:</strong> {{ mensagem }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <table border="1" cellpadding="5" cellspacing="0">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>CPF</th>
+                <th>Placa</th>
+                <th>Tipo</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in clientes %}
+            <tr>
+                <td>{{ c['id'] }}</td>
+                <td>{{ c['nome'] }}</td>
+                <td>{{ c['cpf'] }}</td>
+                <td>{{ c['placa'] }}</td>
+                <td>{{ c['tipo'] }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5">Nenhum cliente cadastrado.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

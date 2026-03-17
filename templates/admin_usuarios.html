@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Usuários do Sistema</h1>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Nome</th>
+      <th>E-mail</th>
+      <th>Role</th>
+      <th>Status</th>
+      <th>Ações</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for u in usuarios %}
+    <tr>
+      <td>{{ u[0] }}</td>
+      <td>{{ u[1] }}</td>
+      <td>{{ u[2] }}</td>
+      <td>{{ u[3] }}</td>
+      <td>
+        {% if u[4] == 1 %}
+          Bloqueado
+        {% else %}
+          Ativo
+        {% endif %}
+      </td>
+      <td>
+        {% if u[4] == 1 %}
+          <form action="{{ url_for('desbloquear_usuario_route', user_id=u[0]) }}" method="post" style="display:inline;">
+            <button type="submit" class="btn btn-success btn-sm">Desbloquear</button>
+          </form>
+        {% else %}
+          <form action="{{ url_for('bloquear_usuario_route', user_id=u[0]) }}" method="post" style="display:inline;">
+            <button type="submit" class="btn btn-danger btn-sm">Bloquear</button>
+          </form>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

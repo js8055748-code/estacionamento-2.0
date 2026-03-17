@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Estacionamento inteligente</title>
+</head>
+<body>
+    <h1>Login</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul>
+        {% for categoria, mensagem in messages %}
+          <li><strong>{{ categoria }}:</strong> {{ mensagem }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <form action="{{ url_for('login') }}" method="post">
+        <label>E-mail:</label>
+        <input type="email" name="email" required><br>
+
+        <label>Senha:</label>
+        <input type="password" name="senha" required><br>
+
+        <button type="submit">Entrar</button>
+    </form>
+
+    <p><a href="{{ url_for('index') }}">Voltar ao início</a></p>
+</body>
+</html>
