@@ -17,18 +17,4 @@ Ideal para pequenos e médios estacionamentos que precisam automatizar o control
 
 ## 🖥️ Tecnologias utilizadas
 
-- Linguagem: Python *(ajuste aqui se for outra, ex.: Java, PHP, Node.js)*  
-- Framework web: Flask *(ou Django, Java Spring, etc.)*  
-- Banco de dados: SQLite  
-- Front‑end: HTML, CSS, Bootstrap, JavaScript *(ou Tkinter, se for desktop)*  
-- Geração de PDF: ReportLab ou similar *(ajuste conforme sua stack)*  
-
-*(Adapte essa seção com as tecnologias reais do seu projeto.)*
-
-## 🚀 Como rodar o projeto
-
-1. **Clone o repositório:**
-
-   ```bash
-   git clone https://github.com/seu-usuario/seu-repositorio.git
-   cd seu-repositorio
+- Linguagem: Python...
