@@ -1,92 +1,58 @@
-import os
-import sqlite3
-from werkzeug.security import generate_password_hash, check_password_hash
-
-DB_NAME = "estacionamento.db"
-ESTACIONAMENTO_PADRAO_ID = 1  # valor padrão
-
-
-def conectar():
-    caminho = os.path.join(os.path.dirname(__file__), DB_NAME)
-    conn = sqlite3.connect(caminho)
-    conn.row_factory = sqlite3.Row
-    return conn
+from db_postgres import conectar, obter_cursor
 
 
 class Usuario:
     @staticmethod
-    def criar_usuario(nome, email, senha, estacionamento_id=ESTACIONAMENTO_PADRAO_ID, role="OPERADOR"):
+    def verificar_login(email, senha_clara):
         conn = conectar()
-        cur = conn.cursor()
+        cur = obter_cursor(conn)
+        try:
+            cur.execute(
+                """
+                SELECT
+                    id,
+                    nome,
+                    email,
+                    login,
+                    senha_hash,
+                    perfil      AS role,
+                    estacionamento_id,
+                    FALSE       AS precisa_definir_senha
+                FROM usuarios
+                WHERE email = %s
+                  AND ativo = TRUE
+                LIMIT 1;
+                """,
+                (email,),
+            )
+            user = cur.fetchone()
+        finally:
+            cur.close()
+            conn.close()
 
-        senha_hash = generate_password_hash(senha)
-        cur.execute("""
-            INSERT INTO usuarios (nome, email, senha, estacionamento_id, role, bloqueado, precisa_definir_senha)
-            VALUES (?, ?, ?, ?, ?, 0, 1)
-        """, (nome, email, senha_hash, estacionamento_id, role))
+        if not user:
+            return None
 
-        conn.commit()
-        user_id = cur.lastrowid
-        conn.close()
-        return user_id
+        # Comparação simples (sem hash) por enquanto
+        if senha_clara != user["senha_hash"]:
+            return None
 
-    @staticmethod
-    def criar_usuario_responsavel(nome, email, senha, estacionamento_id):
-        """
-        Atalho para criar o usuário responsável do estacionamento.
-        """
-        if not nome or not email or not senha or estacionamento_id is None:
-            raise ValueError("Dados incompletos para criar usuário responsável.")
-
-        role = "USUARIO"  # papel do responsável
-        return Usuario.criar_usuario(nome, email, senha, estacionamento_id=estacionamento_id, role=role)
+        return user
 
     @staticmethod
     def definir_primeira_senha(user_id, nova_senha):
         conn = conectar()
-        cur = conn.cursor()
-        senha_hash = generate_password_hash(nova_senha)
-        cur.execute("""
-            UPDATE usuarios
-            SET senha = ?, precisa_definir_senha = 0
-            WHERE id = ?
-        """, (senha_hash, user_id))
-        conn.commit()
-        conn.close()
-
-    @staticmethod
-    def buscar_por_email(email):
-        conn = conectar()
-        cur = conn.cursor()
-        cur.execute("""
-            SELECT id, nome, email, senha, estacionamento_id, role, bloqueado, precisa_definir_senha
-            FROM usuarios
-            WHERE email = ?
-        """, (email,))
-        row = cur.fetchone()
-        conn.close()
-        return row
-
-    @staticmethod
-    def verificar_login(email, senha):
-        user = Usuario.buscar_por_email(email)
-        if user is None:
-            return None
-
-        senha_hash = user["senha"]  # coluna 'senha' guarda o hash
-
-        if not check_password_hash(senha_hash, senha):
-            return None
-
-        if user["bloqueado"]:
-            return None
-
-        return {
-            "id": user["id"],
-            "nome": user["nome"],
-            "email": user["email"],
-            "estacionamento_id": user["estacionamento_id"],
-            "role": user["role"],
-            # se quiser usar precisa_definir_senha no login, você pode incluir aqui também:
-            # "precisa_definir_senha": user["precisa_definir_senha"],
-        }
+        cur = obter_cursor(conn)
+        try:
+            cur.execute(
+                """
+                UPDATE usuarios
+                SET senha_hash = %s
+                WHERE id = %s;
+                """,
+                (nova_senha, user_id),
+            )
+            conn.commit()
+        finally:
+            cur.close()
+            conn.close()

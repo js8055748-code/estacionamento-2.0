@@ -17,16 +17,15 @@
       {% endif %}
     {% endwith %}
 
-    <form action="{{ url_for('login') }}" method="post">
-        <label>E-mail:</label>
-        <input type="email" name="email" required><br>
+    <form action="{{ url_for('login') }}" method="post" autocomplete="off">
+    <label>E-mail:</label>
+    <input type="email" name="email" required autocomplete="username" value=""><br>
 
-        <label>Senha:</label>
-        <input type="password" name="senha" required><br>
+    <label>Senha:</label>
+    <input type="password" name="senha" required autocomplete="new-password" value=""><br>
 
-        <button type="submit">Entrar</button>
-    </form>
+    <button type="submit">Entrar</button>
+</form>
 
-    <p><a href="{{ url_for('index') }}">Voltar ao início</a></p>
 </body>
 </html>

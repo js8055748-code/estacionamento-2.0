@@ -4,8 +4,20 @@
 
 <form class="row g-3 mb-3" method="get" action="{{ url_for('relatorio_diario') }}">
   <div class="col-auto">
-    <label class="form-label">Data (AAAA-MM-DD)</label>
-    <input type="date" name="dia" value="{{ dia }}" class="form-control">
+    <form method="get" action="{{ url_for('relatorio_diario') }}">
+  <div class="mb-3">
+    
+    <input
+      type="date"
+      name="dia"
+      class="form-control"
+      value="{{ dia }}"
+    >
+  </div>
+
+  <button type="submit" class="btn btn-primary">Buscar</button>
+</form>
+
   </div>
   <div class="col-auto d-flex align-items-end">
     <button type="submit" class="btn btn-primary">Carregar</button>

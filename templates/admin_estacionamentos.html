@@ -4,7 +4,6 @@
 <div class="container mt-4">
   <h1>Estacionamentos</h1>
 
-  <!-- Mensagem de orientação fixa para o administrador -->
   <p class="text-muted">
     Ao cadastrar um novo estacionamento, é criado um usuário responsável com o e-mail informado.
     Use o botão <strong>Link do responsável</strong> para copiar o link que deve ser enviado para ele definir a senha.
@@ -28,7 +27,7 @@
           </div>
           <div class="col-md-3 mb-3">
             <label class="form-label">CNPJ</label>
-            <input type="text" name="cnpj" class="form-control">
+            <input type="text" name="documento" class="form-control">
           </div>
           <div class="col-md-3 mb-3">
             <label class="form-label">Telefone</label>
@@ -74,7 +73,7 @@
           <tr>
             <th>ID</th>
             <th>Nome</th>
-            <th>Código</th>
+            <th>CNPJ</th>
             <th>Status</th>
             <th>Ações</th>
           </tr>
@@ -82,38 +81,55 @@
         <tbody>
           {% for e in estacionamentos %}
           <tr>
-            <td>{{ e[0] }}</td>
+            <td>{{ e["id"] }}</td>
             <td>
-              <a href="{{ url_for('detalhes_estacionamento', est_id=e[0]) }}">
-                {{ e[1] }}
+              <a href="{{ url_for('detalhes_estacionamento', est_id=e['id']) }}">
+                {{ e["nome"] }}
               </a>
             </td>
-            <td>{{ e[2] }}</td>
+            <td>{{ e["documento"] }}</td>
             <td>
-              {% if e[3] == 1 %}
+              {% if e["ativo"] %}
                 <span class="badge bg-success">Ativo</span>
               {% else %}
                 <span class="badge bg-danger">Bloqueado</span>
               {% endif %}
             </td>
             <td>
-              {% if e[3] == 1 %}
-                <form action="{{ url_for('bloquear_estacionamento_route', est_id=e[0]) }}" method="post" style="display:inline;">
-                  <button type="submit" class="btn btn-danger btn-sm">Bloquear</button>
+              {% if e["ativo"] %}
+                {# Bloquear usuário responsável + estacionamento (se tiver responsável) #}
+                {% if e["responsavel_id"] %}
+                  <!-- Aqui você pode colocar ações específicas para quando há responsável -->
+                {% else %}
+                  <span class="text-muted me-1">Sem responsável</span>
+                {% endif %}
+
+                <form action="{{ url_for('bloquear_estacionamento_route', est_id=e['id']) }}"
+                      method="post"
+                      style="display:inline;">
+                  <button type="submit" class="btn btn-outline-warning btn-sm ms-1">
+                    Bloquear estacionamento
+                  </button>
                 </form>
               {% else %}
-                <form action="{{ url_for('desbloquear_estacionamento_route', est_id=e[0]) }}" method="post" style="display:inline;">
+                <form action="{{ url_for('desbloquear_estacionamento_route', est_id=e['id']) }}"
+                      method="post"
+                      style="display:inline;">
                   <button type="submit" class="btn btn-success btn-sm">Desbloquear</button>
                 </form>
               {% endif %}
 
-              <form action="{{ url_for('excluir_estacionamento_route', est_id=e[0]) }}" method="post" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja excluir este estacionamento?');">
-                <button type="submit" class="btn btn-outline-danger btn-sm ms-1">Excluir</button>
+              <form action="{{ url_for('excluir_estacionamento_route', est_id=e['id']) }}"
+                    method="post"
+                    style="display:inline;"
+                    onsubmit="return confirm('Tem certeza que deseja excluir este estacionamento?');">
+                <button type="submit" class="btn btn-outline-danger btn-sm ms-1">
+                  Excluir
+                </button>
               </form>
 
-              {% if e[4] %}
-                <!-- Link de convite para o responsável -->
-                <a href="{{ url_for('convite_definir_senha', user_id=e[4]) }}"
+              {% if e["responsavel_id"] %}
+                <a href="{{ url_for('convite_definir_senha', user_id=e['responsavel_id']) }}"
                    class="btn btn-outline-primary btn-sm ms-1">
                   Link do responsável
                 </a>

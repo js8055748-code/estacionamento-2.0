@@ -9,7 +9,7 @@ cur = conn.cursor()
 
 email_resp = "teste3@teste3.com"
 
-print("USUÁRIO RESPONSÁVEL:")
+print("USUARIO RESPONSÁVEL:")
 cur.execute("""
     SELECT id, nome, email, estacionamento_id, role
     FROM usuarios

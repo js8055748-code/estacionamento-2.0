@@ -1,6 +1,21 @@
 {% extends "base.html" %}
+
 {% block content %}
-<h1>Bem-vindo ao Estacionamento</h1>
+<h1>
+  Bem-vindo ao Estacionamento
+  {% if session.get('estacionamento_nome') %}
+    {{ session['estacionamento_nome'] }}
+  {% elif session.get('responsavel_nome') %}
+    {{ session['responsavel_nome'] }}
+  {% endif %}
+</h1>
+
 <p>Use o menu para acessar clientes, movimentação e relatórios.</p>
+
+<a href="{{ url_for('listar_clientes') }}" class="btn btn-primary me-2">
+  Gerenciar Clientes
+</a>
+<a href="{{ url_for('login') }}" class="btn btn-secondary">
+  Entrar como administrador
+</a>
 {% endblock %}
-<a href="{{ url_for('listar_clientes') }}">Gerenciar Clientes</a>

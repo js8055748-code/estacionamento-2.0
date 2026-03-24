@@ -13,7 +13,7 @@ def criar_tabelas():
     conn = conectar()
     cur = conn.cursor()
 
-    cur.execute(
+    cur.execute(                                          #TABELA PARA CRIAÇÃO DO ESTACIONAMENTO 
         """
         CREATE TABLE IF NOT EXISTS estacionamentos (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -29,7 +29,7 @@ def criar_tabelas():
         """
     )
 
-    cur.execute(
+    cur.execute(                                            #TABELA PARA CRIAÇÃO DO USUARIO
         """
         CREATE TABLE IF NOT EXISTS usuarios (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -44,7 +44,7 @@ def criar_tabelas():
         """
     )
 
-    cur.execute(
+    cur.execute(                                              #TABELA PARA CRIAÇÃO DOS CLIENTES NA TELA DO ESTACIOANMENTO 
         """
         CREATE TABLE IF NOT EXISTS clientes (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -59,7 +59,7 @@ def criar_tabelas():
         """
     )
 
-    cur.execute(
+    cur.execute(                                      #TABELA DE MOVIMENTAÇÃO 
         """
         CREATE TABLE IF NOT EXISTS movimentacoes (
             id INTEGER PRIMARY KEY AUTOINCREMENT,

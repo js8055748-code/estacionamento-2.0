@@ -1,32 +1,58 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Detalhes do Estacionamento</h1>
+<div class="container mt-4">
+  <h1>Detalhes do Estacionamento</h1>
 
-<div class="card">
-  <div class="card-body">
-    <h3 class="card-title">{{ est[1] }} (ID {{ est[0] }})</h3>
+  <div class="card">
+    <div class="card-header">
+      {{ est["nome"] }} (ID {{ est["id"] }})
+    </div>
+    <div class="card-body">
+      <dl class="row">
+        <dt class="col-sm-3">CNPJ</dt>
+        <dd class="col-sm-9">{{ est["cnpj"] or "-" }}</dd>
 
-    <p><strong>Código:</strong> {{ est[3] }}</p>
-    <p><strong>CNPJ:</strong> {{ est[2] or "-" }}</p>
-    <p><strong>Telefone:</strong> {{ est[4] or "-" }}</p>
-    <p><strong>E-mail:</strong> {{ est[5] or "-" }}</p>
-    <p><strong>Proprietário:</strong> {{ est[6] or "-" }}</p>
-    <p><strong>Contato do proprietário:</strong> {{ est[7] or "-" }}</p>
-    <p><strong>Status:</strong>
-        <p class="mt-3">
-  <strong>Orientação ao administrador:</strong><br>
-  Envie ao responsável o link <code>/login</code> e o e-mail cadastrado para que ele defina a própria senha no primeiro acesso.
-</p>
+        <dt class="col-sm-3">Telefone</dt>
+        <dd class="col-sm-9">{{ est["telefone"] or "-" }}</dd>
 
-      {% if est[8] == 1 %}
-        Ativo
+        <dt class="col-sm-3">E-mail</dt>
+        <dd class="col-sm-9">{{ est["email"] or "-" }}</dd>
+
+        <dt class="col-sm-3">Endereço</dt>
+        <dd class="col-sm-9">{{ est["endereco"] or "-" }}</dd>
+
+        <dt class="col-sm-3">Status</dt>
+        <dd class="col-sm-9">
+          {% if est["ativo"] %}
+            <span class="badge bg-success">Ativo</span>
+          {% else %}
+            <span class="badge bg-danger">Bloqueado</span>
+          {% endif %}
+        </dd>
+      </dl>
+
+      <a href="{{ url_for('admin_estacionamentos') }}" class="btn btn-secondary">
+        Voltar
+      </a>
+      {% if est["ativo"] %}
+        <form action="{{ url_for('bloquear_estacionamento_route', est_id=est['id']) }}"
+              method="post"
+              style="display:inline;">
+          <button type="submit" class="btn btn-outline-warning ms-2">
+            Bloquear
+          </button>
+        </form>
       {% else %}
-        Bloqueado
+        <form action="{{ url_for('desbloquear_estacionamento_route', est_id=est['id']) }}"
+              method="post"
+              style="display:inline;">
+          <button type="submit" class="btn btn-success ms-2">
+            Desbloquear
+          </button>
+        </form>
       {% endif %}
-    </p>
-
-    <a href="{{ url_for('admin_estacionamentos') }}" class="btn btn-secondary">Voltar</a>
+    </div>
   </div>
 </div>
 {% endblock %}
