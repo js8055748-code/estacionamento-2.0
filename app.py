@@ -14,6 +14,7 @@ from collections import defaultdict
 from matplotlib.figure import Figure
 from fpdf import FPDF
 from functools import wraps
+from usuario import Usuario
 
 from db_postgres import conectar, obter_cursor
 from usuario import Usuario
